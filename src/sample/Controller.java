@@ -2,6 +2,7 @@ package sample;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
 import javafx.scene.text.Text;
 
 import java.net.URL;
@@ -21,6 +22,9 @@ public class Controller {
 
     @FXML
     private ChoiceBox Restaurante;
+
+    @FXML
+    private Label Resultado;
 
     public Controller()
     {
@@ -44,6 +48,11 @@ public class Controller {
         restaurantes.add("Madero Container");
         restaurantes.add("Severo Garage");
         Restaurante.getItems().setAll(restaurantes);
+    }
+
+    @FXML
+    private void vote(){
+        Resultado.setText("Voto Computado");
     }
 
 
