@@ -1,9 +1,10 @@
 package sample;
-import javafx.event.ActionEvent;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
-import javafx.scene.text.Text;
+import javafx.util.Duration;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -53,8 +54,15 @@ public class Controller {
     @FXML
     private void vote(){
         Resultado.setText("Voto Computado");
+        Timeline timeline = new Timeline(new KeyFrame(
+                Duration.millis(2500),
+                ae -> changeText()));
+        timeline.play();
     }
 
+    private void changeText(){
+        if(Resultado.getText() != "Aguardando Conclusão") Resultado.setText("Aguardando Conclusão");
+    }
 
 
 
