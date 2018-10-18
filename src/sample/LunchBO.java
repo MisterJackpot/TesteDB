@@ -40,4 +40,25 @@ public class LunchBO {
         }
         return cal.get(Calendar.WEEK_OF_YEAR);
     }
+
+    public boolean isPastNoon(Date dt){
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(dt);
+        System.out.println(cal.get(Calendar.HOUR_OF_DAY));
+        if(cal.get(Calendar.HOUR_OF_DAY) >= 12){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public HashMap<String,Lunch> computeVote(LocalDate dt, ArrayList<String> faltam, HashMap<String,Integer> votos, HashMap<String,Lunch> days){
+        Lunch aux = new Lunch(dt,faltam,votos);
+        if(days.containsKey(dt.toString())){
+            days.replace(dt.toString(),aux);
+        }else{
+            days.put(dt.toString(),aux);
+        }
+        return days;
+    }
 }

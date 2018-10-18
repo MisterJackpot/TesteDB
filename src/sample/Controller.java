@@ -2,16 +2,13 @@ package sample;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
+import javafx.util.Callback;
 import javafx.util.Duration;
 
 import java.net.URL;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.MonthDay;
 import java.util.*;
 
 
@@ -33,6 +30,9 @@ public class Controller {
 
     @FXML
     private DatePicker Data;
+
+    @FXML
+    private Button BtnVotar;
 
     private ArrayList<String> profissionais;
     private ArrayList<String> restaurantes;
@@ -76,9 +76,29 @@ public class Controller {
         profissionaisAux.addAll(profissionais);
         restaurantesAux.addAll(restaurantes);
 
+
+
         Data.setValue(LocalDate.now());
 
+        final Callback<DatePicker, DateCell> dayCellFactory = new Callback<DatePicker, DateCell>() {
+            public DateCell call(final DatePicker datePicker) {
+                return new DateCell() {
+                    @Override public void updateItem(LocalDate item, boolean empty) {
+                        super.updateItem(item, empty);
 
+                        if (MonthDay.from(item).isBefore(MonthDay.from(LocalDate.now()))) {
+                            setDisable(true);
+                        }
+                    }
+                };
+            }
+        };
+        Data.setDayCellFactory(dayCellFactory);
+        Data.setEditable(false);
+        if(lunchBO.isPastNoon(new Date())){
+            BtnVotar.setDisable(true);
+            changeText("Finalizado");
+        }
     }
 
     @FXML
@@ -91,15 +111,7 @@ public class Controller {
                 votos.put(Restaurante.getValue().toString(),1);
             }
             profissionaisAux.remove(Profissional.getValue());
-            if(days.containsKey(Data.getValue().toString())){
-                Lunch aux = days.get(Data.getValue().toString());
-                aux.setFaltam(profissionaisAux);
-                aux.setVotos(votos);
-                days.replace(Data.getValue().toString(),aux);
-            }else{
-                Lunch aux = new Lunch(Data.getValue(),profissionaisAux,votos);
-                days.put(Data.getValue().toString(),aux);
-            }
+            days = lunchBO.computeVote(Data.getValue(),profissionaisAux,votos,days);
         }else{
             Resultado.setText("Profissional já votou nesta data");
         }
@@ -111,6 +123,7 @@ public class Controller {
 
     @FXML
     private void changeDate(){
+        BtnVotar.setDisable(false);
         System.out.println(Data.getValue().toString());
         if(days.containsKey(Data.getValue().toString())){
             Lunch aux = days.get(Data.getValue().toString());
@@ -132,14 +145,19 @@ public class Controller {
             restaurantesAux = restaurantes;
         }
         Restaurante.getItems().setAll(restaurantesAux);
+        if(Data.getValue().isEqual(LocalDate.now())){
+            if(lunchBO.isPastNoon(new Date())){
+                BtnVotar.setDisable(true);
+                changeText("Finalizado");
+            }
+        }
     }
 
     private void changeText(String res){
-        if(res.equals("")) {
+        if(res.equals("") || res.equals("Finalizado")) {
             if (profissionaisAux.isEmpty()) {
-                HashMap<String,Integer> votesAux = votos;
-                String resultado = lunchBO.calculateVotes(votesAux,restaurantesAux);
-                Resultado.setText("Almoço hoje: " + resultado);
+                String resultado = lunchBO.calculateVotes(votos,restaurantesAux);
+                Resultado.setText("Almoço: " + resultado);
                 Lunch winnerAux = days.get(Data.getValue().toString());
                 winnerAux.setWinner(resultado);
                 days.replace(Data.getValue().toString(), winnerAux);
@@ -152,10 +170,14 @@ public class Controller {
                 }
 
             } else {
-                Resultado.setText("Aguardando Conclusão");
+                if(res.equals("Finalizado")){
+                    Resultado.setText("Nenhum Restaurante foi Decidido");
+                }else {
+                    Resultado.setText("Aguardando Conclusão");
+                }
             }
         }else{
-            Resultado.setText("Almoço hoje: " + res);
+            Resultado.setText("Almoço: " + res);
         }
     }
 
