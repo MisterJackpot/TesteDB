@@ -41,6 +41,7 @@ public class Controller {
     private HashMap<String,Integer> votos;
     private HashMap<String,Lunch> days;
     private HashMap<Integer,ArrayList> week;
+    private LunchBO lunchBO;
 
 
     public Controller()
@@ -52,6 +53,7 @@ public class Controller {
         votos = new HashMap<>();
         days = new HashMap<>();
         week = new HashMap<>();
+        lunchBO = new LunchBO();
     }
 
     @FXML
@@ -123,7 +125,7 @@ public class Controller {
             profissionaisAux = profissionais;
             changeText("");
         }
-        int weekAux = getWeek();
+        int weekAux = lunchBO.getWeek(Data.getValue());
         if(week.containsKey(weekAux)){
             restaurantesAux = week.get(weekAux);
         }else{
@@ -136,13 +138,13 @@ public class Controller {
         if(res.equals("")) {
             if (profissionaisAux.isEmpty()) {
                 HashMap<String,Integer> votesAux = votos;
-                String resultado = calculateVotes(votesAux,restaurantesAux);
+                String resultado = lunchBO.calculateVotes(votesAux,restaurantesAux);
                 Resultado.setText("Almoço hoje: " + resultado);
                 Lunch winnerAux = days.get(Data.getValue().toString());
                 winnerAux.setWinner(resultado);
                 days.replace(Data.getValue().toString(), winnerAux);
                 restaurantesAux.remove(resultado);
-                int weekAux = getWeek();
+                int weekAux = lunchBO.getWeek(Data.getValue());
                 if (week.containsKey(weekAux)) {
                     week.replace(weekAux, restaurantesAux);
                 } else {
@@ -154,37 +156,6 @@ public class Controller {
             }
         }else{
             Resultado.setText("Almoço hoje: " + res);
-        }
-    }
-
-    private int getWeek(){
-        Calendar cal = Calendar.getInstance();
-        SimpleDateFormat defaultFormat = new SimpleDateFormat("yyyy-MM-dd");
-        try {
-            Date dt = defaultFormat.parse(Data.getValue().toString());
-            cal.setTime(dt);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return cal.get(Calendar.WEEK_OF_YEAR);
-    }
-
-    private String calculateVotes(HashMap<String,Integer> votosAux, ArrayList<String> restAux){
-        String resultado = "";
-        int aux = 0;
-
-        for (Map.Entry<String, Integer> voto : votos.entrySet()) {
-            if (voto.getValue() > aux) {
-                resultado = voto.getKey();
-                aux = voto.getValue();
-            }
-        }
-
-        if(restAux.contains(resultado)) {
-            return resultado;
-        }else{
-            votosAux.remove(resultado);
-            return calculateVotes(votosAux,restAux);
         }
     }
 

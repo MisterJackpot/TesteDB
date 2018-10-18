@@ -3,6 +3,7 @@ package sample;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class Lunch {
     private LocalDate date;
@@ -47,5 +48,24 @@ public class Lunch {
 
     public void setWinner(String winner) {
         this.winner = winner;
+    }
+
+    public String calculateVotes(HashMap<String,Integer> votosAux, ArrayList<String> restAux){
+        String resultado = "";
+        int aux = 0;
+
+        for (Map.Entry<String, Integer> voto : votosAux.entrySet()) {
+            if (voto.getValue() > aux) {
+                resultado = voto.getKey();
+                aux = voto.getValue();
+            }
+        }
+
+        if(restAux.contains(resultado)) {
+            return resultado;
+        }else{
+            votosAux.remove(resultado);
+            return calculateVotes(votosAux,restAux);
+        }
     }
 }
