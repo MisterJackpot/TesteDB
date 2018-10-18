@@ -103,14 +103,16 @@ public class Controller {
 
     @FXML
     private void vote(){
-        if(profissionaisAux.contains(Profissional.getValue())) {
+        String profissionalAux = Profissional.getValue().toString();
+        String restauranteAux = Restaurante.getValue().toString();
+        if(profissionaisAux.contains(profissionalAux)) {
             Resultado.setText("Voto Computado " + Profissional.getValue());
-            if(votos.containsKey(Restaurante.getValue())){
-                votos.replace(Restaurante.getValue().toString(),votos.get(Restaurante.getValue())+1);
+            if(votos.containsKey(restauranteAux)){
+                votos.replace(restauranteAux,votos.get(restauranteAux)+1);
             }else{
-                votos.put(Restaurante.getValue().toString(),1);
+                votos.put(restauranteAux,1);
             }
-            profissionaisAux.remove(Profissional.getValue());
+            profissionaisAux.remove(profissionalAux);
             days = lunchBO.computeVote(Data.getValue(),profissionaisAux,votos,days);
         }else{
             Resultado.setText("Profissional já votou nesta data");
