@@ -105,15 +105,12 @@ public class Controller {
     private void vote(){
         String profissionalAux = Profissional.getValue().toString();
         String restauranteAux = Restaurante.getValue().toString();
-        if(profissionaisAux.contains(profissionalAux)) {
-            Resultado.setText("Voto Computado " + Profissional.getValue());
-            if(votos.containsKey(restauranteAux)){
-                votos.replace(restauranteAux,votos.get(restauranteAux)+1);
-            }else{
-                votos.put(restauranteAux,1);
-            }
-            profissionaisAux.remove(profissionalAux);
-            days = lunchBO.computeVote(Data.getValue(),profissionaisAux,votos,days);
+        HashMap<String,Lunch> result = lunchBO.computeVote(Data.getValue(),profissionaisAux,votos,days,profissionalAux,restauranteAux);
+        if(result != null) {
+           Resultado.setText("Voto Computado");
+           days = result;
+           profissionaisAux = result.get(Data.getValue().toString()).getFaltam();
+           votos = result.get(Data.getValue().toString()).getVotos();
         }else{
             Resultado.setText("Profissional já votou nesta data");
         }

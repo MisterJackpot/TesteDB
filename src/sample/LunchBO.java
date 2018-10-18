@@ -52,12 +52,22 @@ public class LunchBO {
         }
     }
 
-    public HashMap<String,Lunch> computeVote(LocalDate dt, ArrayList<String> faltam, HashMap<String,Integer> votos, HashMap<String,Lunch> days){
-        Lunch aux = new Lunch(dt,faltam,votos);
-        if(days.containsKey(dt.toString())){
-            days.replace(dt.toString(),aux);
+    public HashMap<String,Lunch> computeVote(LocalDate dt, ArrayList<String> faltam, HashMap<String,Integer> votos, HashMap<String,Lunch> days,String profissional, String restaurante){
+        if(faltam.contains(profissional)) {
+            if(votos.containsKey(restaurante)){
+                votos.replace(restaurante,votos.get(restaurante)+1);
+            }else{
+                votos.put(restaurante,1);
+            }
+            faltam.remove(profissional);
+            Lunch aux = new Lunch(dt,faltam,votos);
+            if(days.containsKey(dt.toString())){
+                days.replace(dt.toString(),aux);
+            }else{
+                days.put(dt.toString(),aux);
+            }
         }else{
-            days.put(dt.toString(),aux);
+            return null;
         }
         return days;
     }
