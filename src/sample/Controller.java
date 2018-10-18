@@ -136,7 +136,7 @@ public class Controller {
         if(res.equals("")) {
             if (profissionaisAux.isEmpty()) {
                 HashMap<String,Integer> votesAux = votos;
-                String resultado = calculateVotes(votesAux);
+                String resultado = calculateVotes(votesAux,restaurantesAux);
                 Resultado.setText("Almoço hoje: " + resultado);
                 Lunch winnerAux = days.get(Data.getValue().toString());
                 winnerAux.setWinner(resultado);
@@ -169,7 +169,7 @@ public class Controller {
         return cal.get(Calendar.WEEK_OF_YEAR);
     }
 
-    private String calculateVotes(HashMap<String,Integer> votosAux){
+    private String calculateVotes(HashMap<String,Integer> votosAux, ArrayList<String> restAux){
         String resultado = "";
         int aux = 0;
 
@@ -180,11 +180,11 @@ public class Controller {
             }
         }
 
-        if(restaurantesAux.contains(resultado)) {
+        if(restAux.contains(resultado)) {
             return resultado;
         }else{
             votosAux.remove(resultado);
-            return calculateVotes(votosAux);
+            return calculateVotes(votosAux,restAux);
         }
     }
 
