@@ -46,10 +46,10 @@ public class Controller {
 
     public Controller()
     {
-        restaurantes = new ArrayList();
-        profissionais = new ArrayList();
-        profissionaisAux = new ArrayList();
-        restaurantesAux = new ArrayList();
+        restaurantes = new ArrayList<>();
+        profissionais = new ArrayList<>();
+        profissionaisAux = new ArrayList<>();
+        restaurantesAux = new ArrayList<>();
         votos = new HashMap<>();
         days = new HashMap<>();
         week = new HashMap<>();
@@ -59,41 +59,18 @@ public class Controller {
     @FXML
     private void initialize()
     {
-        profissionais.add("Juca");
-        profissionais.add("João");
-        profissionais.add("Luisa");
-        profissionais.add("Ariel");
+        profissionais.addAll(Util.getProfissionais());
         Profissional.getItems().setAll(profissionais);
 
-        restaurantes.add("Palatus");
-        restaurantes.add("Predio 32");
-        restaurantes.add("Novo Sabor");
-        restaurantes.add("Subway");
-        restaurantes.add("Madero Container");
-        restaurantes.add("Severo Garage");
+        restaurantes.addAll(Util.getRestaurantes());
         Restaurante.getItems().setAll(restaurantes);
 
         profissionaisAux.addAll(profissionais);
         restaurantesAux.addAll(restaurantes);
 
-
-
         Data.setValue(LocalDate.now());
 
-        final Callback<DatePicker, DateCell> dayCellFactory = new Callback<DatePicker, DateCell>() {
-            public DateCell call(final DatePicker datePicker) {
-                return new DateCell() {
-                    @Override public void updateItem(LocalDate item, boolean empty) {
-                        super.updateItem(item, empty);
-
-                        if (MonthDay.from(item).isBefore(MonthDay.from(LocalDate.now()))) {
-                            setDisable(true);
-                        }
-                    }
-                };
-            }
-        };
-        Data.setDayCellFactory(dayCellFactory);
+        Data.setDayCellFactory(Util.getDayCellRule());
         Data.setEditable(false);
         if(lunchBO.isPastNoon(new Date())){
             BtnVotar.setDisable(true);
@@ -130,12 +107,28 @@ public class Controller {
             profissionaisAux = aux.getFaltam();
             if(!aux.getWinner().contentEquals("")){
                 changeText(aux.getWinner());
+            }else {
+                if (Data.getValue().isEqual(LocalDate.now())) {
+                    if (lunchBO.isPastNoon(new Date())) {
+                        BtnVotar.setDisable(true);
+                        changeText("Finalizado");
+                    }
+                }else {
+                    changeText("");
+                }
             }
-            changeText("");
         }else {
-            votos = new HashMap<>();
-            profissionaisAux = profissionais;
-            changeText("");
+            if(Data.getValue().isEqual(LocalDate.now())){
+                if(lunchBO.isPastNoon(new Date())){
+                    BtnVotar.setDisable(true);
+                    changeText("Finalizado");
+                }
+            }else {
+                votos = new HashMap<>();
+                profissionaisAux = profissionais;
+
+                changeText("");
+            }
         }
         int weekAux = lunchBO.getWeek(Data.getValue());
         if(week.containsKey(weekAux)){
@@ -144,17 +137,11 @@ public class Controller {
             restaurantesAux = restaurantes;
         }
         Restaurante.getItems().setAll(restaurantesAux);
-        if(Data.getValue().isEqual(LocalDate.now())){
-            if(lunchBO.isPastNoon(new Date())){
-                BtnVotar.setDisable(true);
-                changeText("Finalizado");
-            }
-        }
     }
 
     private void changeText(String res){
         if(res.equals("") || res.equals("Finalizado")) {
-            if (profissionaisAux.isEmpty()) {
+            if (profissionaisAux.isEmpty() || (res.equals("Finalizado") && profissionaisAux.size() != profissionais.size())) {
                 String resultado = lunchBO.calculateVotes(votos,restaurantesAux);
                 Resultado.setText("Almoço: " + resultado);
                 Lunch winnerAux = days.get(Data.getValue().toString());

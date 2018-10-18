@@ -11,6 +11,7 @@ public class LunchBO {
     }
 
     public String calculateVotes(HashMap<String,Integer> votosAux, ArrayList<String> restAux){
+        System.out.println("VOTOS:" + votosAux + "\n Restaurantes" + restAux);
         String resultado = "";
         int aux = 0;
 

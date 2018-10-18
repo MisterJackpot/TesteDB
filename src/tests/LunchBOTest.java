@@ -74,6 +74,15 @@ public class LunchBOTest {
         assertEquals(Calendar.getInstance().get(Calendar.WEEK_OF_YEAR),lunchBO.getWeek(today));
     }
 
+    @Test
+    public void computeVote(){
+        HashMap<String,Lunch> aux = days;
+        aux = lunchBO.computeVote(date,profissionaisAux,votos,days,"Joca","Palatus");
+        assertNotNull(aux);
+        assertEquals(4,aux.get(date.toString()).getVotos().get("Palatus").intValue());
+        aux = lunchBO.computeVote(date,profissionaisAux,votos,days,"Joca","Palatus");
+        assertNull(aux);
+    }
 
 
 }
