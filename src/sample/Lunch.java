@@ -3,18 +3,24 @@ package sample;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 public class Lunch {
     private LocalDate date;
-    private HashMap<String,Integer> votos;
-    private ArrayList<String> faltam;
+    private HashMap<String,Integer> votes;
+    private ArrayList<String> missing;
     private String winner;
 
-    public Lunch(LocalDate date, ArrayList faltam, HashMap votos){
+    public Lunch(LocalDate date, ArrayList missing, HashMap votes){
         this.date = date;
-        this.faltam = faltam;
-        this.votos = votos;
+        this.missing = missing;
+        this.votes = votes;
+        this.winner = "";
+    }
+
+    public Lunch(LocalDate dt){
+        this.date = dt;
+        this.missing = new ArrayList<>();
+        this.votes = new HashMap<>();
         this.winner = "";
     }
 
@@ -26,20 +32,20 @@ public class Lunch {
         this.date = date;
     }
 
-    public HashMap<String, Integer> getVotos() {
-        return votos;
+    public HashMap<String, Integer> getVotes() {
+        return votes;
     }
 
-    public void setVotos(HashMap<String, Integer> votos) {
-        this.votos = votos;
+    public void setVotes(HashMap<String, Integer> votes) {
+        this.votes = votes;
     }
 
-    public ArrayList<String> getFaltam() {
-        return faltam;
+    public ArrayList<String> getMissing() {
+        return missing;
     }
 
-    public void setFaltam(ArrayList<String> faltam) {
-        this.faltam = faltam;
+    public void setMissing(ArrayList<String> missing) {
+        this.missing = missing;
     }
 
     public String getWinner() {

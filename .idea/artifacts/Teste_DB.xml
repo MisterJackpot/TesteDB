@@ -1,0 +1,21 @@
+<component name="ArtifactManager">
+  <artifact type="javafx" name="Teste DB">
+    <output-path>$PROJECT_DIR$/out/artifacts/Teste_DB</output-path>
+    <properties id="javafx-properties">
+      <options>
+        <option name="appClass" value="sample.Main" />
+        <option name="description" value="" />
+        <option name="htmlPlaceholderId" value="" />
+        <option name="title" value="SDA" />
+        <option name="vendor" value="" />
+        <option name="version" value="" />
+      </options>
+    </properties>
+    <root id="root">
+      <element id="archive" name="Teste_DB.jar">
+        <element id="module-output" name="Teste DB" />
+        <element id="library" level="module" name="JUnit4" module-name="Teste DB" />
+      </element>
+    </root>
+  </artifact>
+</component>

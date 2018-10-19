@@ -3,12 +3,10 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.util.Callback;
 import javafx.util.Duration;
 
 import java.net.URL;
 import java.time.LocalDate;
-import java.time.MonthDay;
 import java.util.*;
 
 
@@ -34,39 +32,41 @@ public class Controller {
     @FXML
     private Button BtnVotar;
 
-    private ArrayList<String> profissionais;
-    private ArrayList<String> restaurantes;
-    private ArrayList<String> profissionaisAux;
-    private ArrayList<String> restaurantesAux;
-    private HashMap<String,Integer> votos;
+    private ArrayList<String> workers;
+    private ArrayList<String> restaurants;
+    private ArrayList<String> restaurantsAux;
     private HashMap<String,Lunch> days;
     private HashMap<Integer,ArrayList> week;
     private LunchBO lunchBO;
+    private Lunch actualLunch;
 
 
     public Controller()
     {
-        restaurantes = new ArrayList<>();
-        profissionais = new ArrayList<>();
-        profissionaisAux = new ArrayList<>();
-        restaurantesAux = new ArrayList<>();
-        votos = new HashMap<>();
+        restaurants = new ArrayList<>();
+        workers = new ArrayList<>();
+        restaurantsAux = new ArrayList<>();
         days = new HashMap<>();
         week = new HashMap<>();
         lunchBO = new LunchBO();
+        actualLunch = new Lunch(LocalDate.now());
     }
 
+    /**
+     * Method called when the screen is initialized, set the auxiliary variables and get the mocked data from Utils
+     */
     @FXML
     private void initialize()
     {
-        profissionais.addAll(Util.getProfissionais());
-        Profissional.getItems().setAll(profissionais);
+        workers.addAll(Util.getProfissionais());
+        Profissional.getItems().setAll(workers);
 
-        restaurantes.addAll(Util.getRestaurantes());
-        Restaurante.getItems().setAll(restaurantes);
+        restaurants.addAll(Util.getRestaurantes());
+        Restaurante.getItems().setAll(restaurants);
 
-        profissionaisAux.addAll(profissionais);
-        restaurantesAux.addAll(restaurantes);
+
+        actualLunch.setMissing(workers);
+        restaurantsAux.addAll(restaurants);
 
         Data.setValue(LocalDate.now());
 
@@ -78,16 +78,22 @@ public class Controller {
         }
     }
 
+    /**
+     * Method called when the Button is pressed, it compute the vote of the selected worker on the selected restaurant
+     */
     @FXML
     private void vote(){
-        String profissionalAux = Profissional.getValue().toString();
-        String restauranteAux = Restaurante.getValue().toString();
-        HashMap<String,Lunch> result = lunchBO.computeVote(Data.getValue(),profissionaisAux,votos,days,profissionalAux,restauranteAux);
+        String workerAux = Profissional.getValue().toString();
+        String restaurantAux = Restaurante.getValue().toString();
+        Lunch result = lunchBO.computeVote(actualLunch, workerAux, restaurantAux);
         if(result != null) {
-           Resultado.setText("Voto Computado");
-           days = result;
-           profissionaisAux = result.get(Data.getValue().toString()).getFaltam();
-           votos = result.get(Data.getValue().toString()).getVotos();
+            Resultado.setText("Voto Computado");
+            actualLunch = result;
+            if(days.containsKey(Data.getValue().toString())){
+                days.replace(Data.getValue().toString(),actualLunch);
+            }else {
+                days.put(Data.getValue().toString(), actualLunch);
+            }
         }else{
             Resultado.setText("Profissional já votou nesta data");
         }
@@ -97,17 +103,16 @@ public class Controller {
         timeline.play();
     }
 
+    /**
+     * Method called when the date is changed on DatePicker, it verify if the selected date already had result or votes and set the auxiliary variables
+     */
     @FXML
     private void changeDate(){
         BtnVotar.setDisable(false);
-        System.out.println(Data.getValue().toString());
-        System.out.println("Dias \n" + days);
         if(days.containsKey(Data.getValue().toString())){
-            Lunch aux = days.get(Data.getValue().toString());
-            votos = aux.getVotos();
-            profissionaisAux = aux.getFaltam();
-            if(!aux.getWinner().contentEquals("")){
-                changeText(aux.getWinner());
+            actualLunch = days.get(Data.getValue().toString());
+            if(!actualLunch.getWinner().contentEquals("")){
+                changeText(actualLunch.getWinner());
             }else {
                 if (Data.getValue().isEqual(LocalDate.now())) {
                     if (lunchBO.isPastNoon(new Date())) {
@@ -125,51 +130,50 @@ public class Controller {
                     changeText("Finalizado");
                 }
             }else {
-                votos = new HashMap<>();
-                profissionaisAux.clear();
-                profissionaisAux.addAll(profissionais);
-
-                System.out.println("Profissionais\n " + profissionaisAux);
+                actualLunch = new Lunch(Data.getValue());
+                actualLunch.setMissing(workers);
                 changeText("");
             }
         }
-        System.out.println("E AGR");
         int weekAux = lunchBO.getWeek(Data.getValue());
         if(week.containsKey(weekAux)){
-            restaurantesAux = week.get(weekAux);
+            restaurantsAux = week.get(weekAux);
         }else{
-            restaurantesAux.clear();
-            restaurantesAux.addAll(restaurantes);
+            restaurantsAux.clear();
+            restaurantsAux.addAll(restaurants);
         }
-        Restaurante.getItems().setAll(restaurantesAux);
+        Restaurante.getItems().setAll(restaurantsAux);
     }
 
+    /**
+     * @param res Some msg for validation
+     *
+     * The method verify if all workers had voted and call the calculate votes, or set the message of the result on screen
+     */
     private void changeText(String res){
-        if(res.equals("") || res.equals("Finalizado")) {
-            if (profissionaisAux.isEmpty() || (res.equals("Finalizado") && profissionaisAux.size() != profissionais.size())) {
-                System.out.println("O PORRA\n" +profissionaisAux +"\n" + profissionais);
-                String resultado = lunchBO.calculateVotes(votos,restaurantesAux);
+        if(!actualLunch.getWinner().equals("")){
+            Resultado.setText("Almoço: " + actualLunch.getWinner());
+        }else {
+            if (actualLunch.getMissing().isEmpty() || (res.equals("Finalizado") && actualLunch.getMissing().size() != workers.size())) {
+                String resultado = lunchBO.calculateVotes(actualLunch.getVotes(), restaurantsAux);
                 Resultado.setText("Almoço: " + resultado);
-                Lunch winnerAux = days.get(Data.getValue().toString());
-                winnerAux.setWinner(resultado);
-                days.replace(Data.getValue().toString(), winnerAux);
-                restaurantesAux.remove(resultado);
+                actualLunch.setWinner(resultado);
+                days.replace(Data.getValue().toString(), actualLunch);
+                restaurantsAux.remove(resultado);
                 int weekAux = lunchBO.getWeek(Data.getValue());
                 if (week.containsKey(weekAux)) {
-                    week.replace(weekAux, restaurantesAux);
+                    week.replace(weekAux, restaurantsAux);
                 } else {
-                    week.put(weekAux, restaurantesAux);
+                    week.put(weekAux, restaurantsAux);
                 }
 
             } else {
-                if(res.equals("Finalizado")){
+                if (res.equals("Finalizado")) {
                     Resultado.setText("Nenhum Restaurante foi Decidido");
-                }else {
+                } else {
                     Resultado.setText("Aguardando Conclusão");
                 }
             }
-        }else{
-            Resultado.setText("Almoço: " + res);
         }
     }
 

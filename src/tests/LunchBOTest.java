@@ -21,6 +21,7 @@ public class LunchBOTest {
     private LunchBO lunchBO;
     private LocalDate date;
     private LocalDate today;
+    private Lunch lunch;
 
     @Before
     public void setUp() throws Exception {
@@ -31,6 +32,7 @@ public class LunchBOTest {
         lunchBO = new LunchBO();
         date = LocalDate.of(2018,10,18);
         today = LocalDate.now();
+        lunch = new Lunch(date);
 
 
         restaurantesAux.add("Palatus");
@@ -48,6 +50,9 @@ public class LunchBOTest {
         votos.put("Subway",2);
         votos.put("Novo Sabor",1);
         votos.put("Predio 32",1);
+
+        lunch.setMissing(profissionaisAux);
+        lunch.setVotes(votos);
     }
 
     @Test
@@ -77,10 +82,10 @@ public class LunchBOTest {
     @Test
     public void computeVote(){
         HashMap<String,Lunch> aux = days;
-        aux = lunchBO.computeVote(date,profissionaisAux,votos,days,"Joca","Palatus");
+        lunch = lunchBO.computeVote(lunch,"Joca","Palatus");
         assertNotNull(aux);
-        assertEquals(4,aux.get(date.toString()).getVotos().get("Palatus").intValue());
-        aux = lunchBO.computeVote(date,profissionaisAux,votos,days,"Joca","Palatus");
+        assertEquals(4,aux.get(date.toString()).getVotes().get("Palatus").intValue());
+        lunch = lunchBO.computeVote(lunch,"Joca","Palatus");
         assertNull(aux);
     }
 
