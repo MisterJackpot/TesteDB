@@ -10,6 +10,11 @@ public class LunchBO {
     public LunchBO() {
     }
 
+    /**
+     * @param votosAux A HashMap containing <Restaurant,Number of Votes>
+     * @param restAux A ArrayList containing restaurants that can win
+     * @return The winner Restaurant
+     */
     public String calculateVotes(HashMap<String,Integer> votosAux, ArrayList<String> restAux){
         System.out.println("VOTOS:" + votosAux + "\n Restaurantes" + restAux);
         String resultado = "";
@@ -21,7 +26,7 @@ public class LunchBO {
                 aux = voto.getValue();
             }
         }
-
+        if(votosAux.isEmpty()) return "Erro";
         if(restAux.contains(resultado)) {
             return resultado;
         }else{
@@ -30,6 +35,10 @@ public class LunchBO {
         }
     }
 
+    /**
+     * @param data Some date
+     * @return The week of the year of the date
+     */
     public int getWeek(LocalDate data){
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat defaultFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -42,6 +51,10 @@ public class LunchBO {
         return cal.get(Calendar.WEEK_OF_YEAR);
     }
 
+    /**
+     * @param dt Some date
+     * @return true if the date is past noon and false if it's not
+     */
     public boolean isPastNoon(Date dt){
         Calendar cal = Calendar.getInstance();
         cal.setTime(dt);
@@ -53,6 +66,15 @@ public class LunchBO {
         }
     }
 
+    /**
+     * @param dt The date of voting
+     * @param faltam The workers that donsen't vote yet
+     * @param votos The current votes
+     * @param days A HashMap containing <Days,Lunchs>
+     * @param profissional The worker voting
+     * @param restaurante The restaurant voted
+     * @return A HashMap containing <Days,Lunchs> updated with the new vote or null if the worker already had voted this date
+     */
     public HashMap<String,Lunch> computeVote(LocalDate dt, ArrayList<String> faltam, HashMap<String,Integer> votos, HashMap<String,Lunch> days,String profissional, String restaurante){
         if(faltam.contains(profissional)) {
             if(votos.containsKey(restaurante)){

@@ -10,6 +10,10 @@ import java.util.ArrayList;
 
 public class Util {
 
+
+    /**
+     * @return A List of Restaurants mocked
+     */
     public static ArrayList<String> getRestaurantes(){
         ArrayList<String> restaurantes = new ArrayList<>();
         restaurantes.add("Palatus");
@@ -21,6 +25,9 @@ public class Util {
         return restaurantes;
     }
 
+    /**
+     * @return A List of Professionals mocked
+     */
     public static ArrayList<String> getProfissionais(){
         ArrayList<String> profissionais = new ArrayList<>();
         profissionais.add("Juca");
@@ -31,6 +38,9 @@ public class Util {
         return profissionais;
     }
 
+    /**
+     * @return A DayCellFactory for format the DataPicker
+     */
     public static Callback<DatePicker, DateCell> getDayCellRule(){
         final Callback<DatePicker, DateCell> dayCellFactory = new Callback<DatePicker, DateCell>() {
             public DateCell call(final DatePicker datePicker) {

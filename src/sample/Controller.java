@@ -101,6 +101,7 @@ public class Controller {
     private void changeDate(){
         BtnVotar.setDisable(false);
         System.out.println(Data.getValue().toString());
+        System.out.println("Dias \n" + days);
         if(days.containsKey(Data.getValue().toString())){
             Lunch aux = days.get(Data.getValue().toString());
             votos = aux.getVotos();
@@ -125,16 +126,20 @@ public class Controller {
                 }
             }else {
                 votos = new HashMap<>();
-                profissionaisAux = profissionais;
+                profissionaisAux.clear();
+                profissionaisAux.addAll(profissionais);
 
+                System.out.println("Profissionais\n " + profissionaisAux);
                 changeText("");
             }
         }
+        System.out.println("E AGR");
         int weekAux = lunchBO.getWeek(Data.getValue());
         if(week.containsKey(weekAux)){
             restaurantesAux = week.get(weekAux);
         }else{
-            restaurantesAux = restaurantes;
+            restaurantesAux.clear();
+            restaurantesAux.addAll(restaurantes);
         }
         Restaurante.getItems().setAll(restaurantesAux);
     }
@@ -142,6 +147,7 @@ public class Controller {
     private void changeText(String res){
         if(res.equals("") || res.equals("Finalizado")) {
             if (profissionaisAux.isEmpty() || (res.equals("Finalizado") && profissionaisAux.size() != profissionais.size())) {
+                System.out.println("O PORRA\n" +profissionaisAux +"\n" + profissionais);
                 String resultado = lunchBO.calculateVotes(votos,restaurantesAux);
                 Resultado.setText("Almoço: " + resultado);
                 Lunch winnerAux = days.get(Data.getValue().toString());
