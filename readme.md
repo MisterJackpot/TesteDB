@@ -3,7 +3,8 @@
 Para compilar o código é necessario ter a JDK 1.8.0 ou maior, 
 JUnit 4.12 para execução dos testes automatizados e Maven.
  O código foi homologado no Sistema Operacional Windows não avaliando erros nos demais sistemas operacionais. 
- A compilação foi feita utilizando o Intellij IDEA gerando o arquivo .jar e utilizando o Maven por linha de comando.
+ A compilação foi feita utilizando o Intellij IDEA gerando o arquivo .jar e utilizando o Maven por linha de comando
+ (mvn jfx:jar na pasta principal do projeto com a variavel JAVA_HOME configurada para utilizar a JDK).
 
 # Utilização
 
