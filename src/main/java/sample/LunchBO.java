@@ -16,7 +16,6 @@ public class LunchBO {
      * @return The winner Restaurant
      */
     public String calculateVotes(HashMap<String,Integer> votesAux, ArrayList<String> restAux){
-        System.out.println("VOTOS:" + votesAux + "\n Restaurantes" + restAux);
         String resultado = "";
         int aux = 0;
 
@@ -58,7 +57,6 @@ public class LunchBO {
     public boolean isPastNoon(Date dt){
         Calendar cal = Calendar.getInstance();
         cal.setTime(dt);
-        System.out.println(cal.get(Calendar.HOUR_OF_DAY));
         if(cal.get(Calendar.HOUR_OF_DAY) >= 12){
             return true;
         }else{

@@ -65,8 +65,8 @@ public class Controller {
         Restaurante.getItems().setAll(restaurants);
 
 
-        actualLunch.setMissing(workers);
-        restaurantsAux.addAll(restaurants);
+        actualLunch.setMissing((ArrayList<String>) workers.clone());
+        restaurantsAux.addAll((ArrayList<String>) restaurants.clone());
 
         Data.setValue(LocalDate.now());
 
@@ -124,14 +124,9 @@ public class Controller {
                 }
             }
         }else {
-            if(Data.getValue().isEqual(LocalDate.now())){
-                if(lunchBO.isPastNoon(new Date())){
-                    BtnVotar.setDisable(true);
-                    changeText("Finalizado");
-                }
-            }else {
+            if(!checkTime()){
                 actualLunch = new Lunch(Data.getValue());
-                actualLunch.setMissing(workers);
+                actualLunch.setMissing((ArrayList<String>) workers.clone());
                 changeText("");
             }
         }
@@ -139,10 +134,22 @@ public class Controller {
         if(week.containsKey(weekAux)){
             restaurantsAux = week.get(weekAux);
         }else{
-            restaurantsAux.clear();
-            restaurantsAux.addAll(restaurants);
+            restaurantsAux = (ArrayList<String>) restaurants.clone();
         }
         Restaurante.getItems().setAll(restaurantsAux);
+    }
+
+
+    @FXML
+    private boolean checkTime(){
+        if (Data.getValue().isEqual(LocalDate.now())) {
+            if (lunchBO.isPastNoon(new Date())) {
+                BtnVotar.setDisable(true);
+                changeText("Finalizado");
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
